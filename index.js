@@ -29,6 +29,17 @@ app.get('/films', async (req, res, next) => {
     }
 });
 
+app.get('/planets', async (req, res, next) => {
+    try {
+        const { data: { results } } = await axios.request({ baseURL, url: 'planets' });
+        results.forEach(x => x.id = getPlanetId(x.url));
+        return res.send(results).status(200);
+    } catch (error) {
+        console.error(error);
+        next(error);
+    }
+});
+
 app.get('/films/:id', async (req, res, next) => {
     try {
         const filmId = req.params.id;
@@ -61,9 +72,45 @@ app.get('/films/:id', async (req, res, next) => {
     }
 });
 
+app.get('/planets/:id', async (req, res, next) => {
+    try {
+        const planetId = req.params.id;
+        const { data } = await axios.request({ baseURL, url: `planets/${planetId}` });
+
+        const filmsRequests = await Promise.all(data.films.map(filmsUrl => {
+            return axios.get(filmsUrl);
+        }));
+
+        const films = filmsRequests.map((y) => y.data).map((x) => {
+            return {
+                name: x.name
+            }
+        });
+
+        const residentsRequests = await Promise.all(data.residents.map(residentsUrl => {
+            return axios.get(residentsUrl);
+        }));
+
+        const residents = residentsRequests.map((y) => y.data).map((x) => {
+            return {
+                name: x.name
+            }
+        });
+
+        data.id = getPlanetId(data.url);
+        data.films = films;
+        data.residents = residents;        
+
+        return res.send(data).status(200);
+    } catch (error) {
+        console.error(error);
+        next(error);
+    }
+});
+
 app.all('*', async (req, res, next) => {
     res.send({
-        routes: ['films', 'films/id']
+        routes: ['films', 'films/id', 'planets', 'planets/id']
     })
 })
 
