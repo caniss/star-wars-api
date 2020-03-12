@@ -9,6 +9,11 @@ const getFilmId = (url) => {
     return Number(id);
 }
 
+const getPlanetId = (url) => {
+    const id = url.split('/')[5];
+    return Number(id);
+}
+
 const getCharacterImageUrl = (url) => {
     const getCharacterId = url.split('/')[5];
     return `https://starwars-visualguide.com/assets/img/characters/${getCharacterId}.jpg`;
@@ -83,7 +88,7 @@ app.get('/planets/:id', async (req, res, next) => {
 
         const films = filmsRequests.map((y) => y.data).map((x) => {
             return {
-                name: x.name
+                title: x.title
             }
         });
 
@@ -93,7 +98,8 @@ app.get('/planets/:id', async (req, res, next) => {
 
         const residents = residentsRequests.map((y) => y.data).map((x) => {
             return {
-                name: x.name
+                name: x.name,
+                photo: getCharacterImageUrl(x.url)
             }
         });
 
@@ -128,5 +134,5 @@ app.use((req, res, next) => {
 
 const port = process.env.PORT || 9000;
 app.listen(port, () => {
-    console.log(`Aplicação - Ativa :D | ${port}`);
+    console.log(`Aplicação Ativa :D | ${port}`);
 });
