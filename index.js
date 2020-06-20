@@ -2,7 +2,17 @@ const app = require('express')();
 const axios = require('axios');
 const baseURL = 'https://swapi.dev/api/';
 
+app.use((req, res, next) => {
+    res.header('Content-Type', 'application/json; charset=utf-8');
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', req.header('access-control-request-headers' || '*'));
+    res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
 
+    if (req.method === 'OPTIONS') {
+        return res.status(204).send();
+    }
+    next();
+});
 
 const getFilmId = (url) => {
     const id = url.split('/')[5];
@@ -119,18 +129,6 @@ app.all('*', async (req, res, next) => {
         routes: ['films', 'films/id', 'planets', 'planets/id']
     })
 })
-
-app.use((req, res, next) => {
-    res.header('Content-Type', 'application/json; charset=utf-8');
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Headers', req.header('access-control-request-headers' || '*'));
-    res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
-
-    if (req.method === 'OPTIONS') {
-        return res.status(204).send();
-    }
-    next();
-});
 
 const port = process.env.PORT || 9000;
 app.listen(port, () => {
