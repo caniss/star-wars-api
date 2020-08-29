@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-star-wars
+spec:
+  selector:
+    matchLabels:
+      app: api-star-wars
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: api-star-wars
+    spec:
+      containers:
+      - name: api-star-wars
+        image: caniss/star-wars-api:0.1.0
+        ports:
+        - containerPort: 9000

@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-api
+spec:
+  type: ClusterIP
+  selector:
+    app: api-star-wars
+  ports:
+    - protocol: TCP
+      port: 9000
+      targetPort: 9000
